@@ -18,8 +18,6 @@ data_pla=[]
 data_video=[]
 v_data=[]
 
-
-
 def ybe(c_id):
     request = youtube.channels().list(part="snippet,contentDetails,statistics", id=c_id)
     response = request.execute()
@@ -28,7 +26,14 @@ def ybe(c_id):
                        response['items'][0]['snippet']['description']])
     cha_data[0][2]=int(cha_data[0][2])
     cha_data[0]=tuple(cha_data[0])
-    
+    client=mysql.connector.connect(host="localhost",
+                                   user="root",
+                                   password="root",
+                                   database="project_youtube")
+    cursor=client.cursor()
+    query="""insert into channel (channel_id,
+           channel_name, channel_views, channel_description) values (%s, %s, %s, %s)"""
+    cursor.execute(query,cha_data[0])
     return cha_data
 
 #Step 2:Getting playlist details using channel id
@@ -41,6 +46,13 @@ def pla(p):
     for i in range(x):
         data_pla.insert(i,(response['items'][i]['id'],response['items'][0]['snippet']['channelId'],
                            response['items'][i]['snippet']['title']))
+    client=mysql.connector.connect(host="localhost",
+                                   user="root",
+                                   password="root",
+                                   database="project_youtube")
+    cursor=client.cursor()
+    query="insert into playlist values(%s, %s, %s)"
+    cursor.execute(query,data_pla[0])
     return data_pla
 
 #Step 3:Getting video details using playlist id
@@ -102,6 +114,14 @@ def vid(x):
         count_video[i][4]=YTDurationToSeconds(count_video[i][4])
         v_data.insert(i,(data_video[i] + count_video[i]))
         v_data[i]=tuple(v_data[i])
+    client=mysql.connector.connect(host="localhost",
+                                   user="root",
+                                   password="root",
+                                   database="project_youtube")
+    cursor=client.cursor()
+
+    query="insert into video values(%s, %s, %s, %s, %s, %s, %s, %s , %s, %s, %s, %s)"
+    cursor.executemany(query,v_data)
     return v_data
 
 #Step 4:Getting comment details of each video using video id
@@ -120,35 +140,26 @@ def comm(t):
         x=comm_data[i][4].replace('T'," ")
         comm_data[i][4]=x.replace('Z',"")
         comm_data[i]=tuple(comm_data[i])
+    
+    client=mysql.connector.connect(host="localhost",
+                                   user="root",
+                                   password="root",
+                                   database="project_youtube")
+    cursor=client.cursor()
+
+
+    query="insert into comment values(%s, %s, %s, %s, %s)"
+    cursor.executemany(query,comm_data)
     return comm_data
 
 
 st.title('YOUTUBE DATA HARVESTING')
-ybe(st.text_input("Enter the Channel id"))
-pla(cha_data[0][0])
-vid(len(data_pla))
-comm(len(v_data))
-
-if (st.button("Load to Database")):
-    client=mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="root",
-    database="project_youtube")
-
-    cursor=client.cursor()
-    query="insert into channel values(%s, %s, %s, %s)"
-    cursor.execute(query,cha_data[0])
-    client.commit()
-    query="insert into playlist values(%s, %s, %s)"
-    cursor.execute(query,data_pla[0])
-    client.commit()
-    query="insert into video values(%s, %s, %s, %s, %s, %s, %s, %s , %s, %s, %s, %s)"
-    cursor.executemany(query,v_data)
-    client.commit()
-    query="insert into comment values(%s, %s, %s, %s, %s)"
-    cursor.executemany(query,comm_data)
-    client.commit()
+j=st.text_input("Enter the Channel id",None)
+if (st.button("extract")):
+   ybe(j)
+   pla(cha_data[0][0])
+   vid(len(data_pla))
+   comm(len(v_data))
 
 options = ["What are the Names of all the videos and their corresponding channels?",
             "Which channels have the most number of videos, and how many videos do they have?",
@@ -181,22 +192,22 @@ if option == "What are the Names of all the videos and their corresponding chann
         st.success("DONE")
 
 # 2
-    elif option == "Which channel have the most number of videos, and how many videos do they have?":
-        if st.button("GET SOLUTION"):
-            query_2 = """select  channel.channel_name , count(video.video_name)   from channel inner join playlist on channel.channel_id=playlist.channel_id 
+elif option == "Which channel have the most number of videos, and how many videos do they have?":
+    if st.button("GET SOLUTION"):
+        query_2 = """select  channel.channel_name , count(video.video_name)   from channel inner join playlist on channel.channel_id=playlist.channel_id 
                          inner join video on playlist.playlist_id=video.playlist_id group by channel.channel_name
                          order by count(video.video_name) desc limit 1"""
-            cursor.execute(query_2)
-            print("Channel with Most number of Videos :")
-            data_2 = [i for i in cursor.fetchall()]
-            df_1 = pd.DataFrame(data_2, columns=["Channel Name", "Total Videos"], index=range(1, len(data_2) + 1))
-            st.dataframe(df_1)
-            st.success("DONE")
+        cursor.execute(query_2)
+        print("Channel with Most number of Videos :")
+        data_2 = [i for i in cursor.fetchall()]
+        df_1 = pd.DataFrame(data_2, columns=["Channel Name", "Total Videos"], index=range(1, len(data_2) + 1))
+        st.dataframe(df_1)
+        st.success("DONE")
 
 
 
 # 3
-    elif option == "What are the top 10 most viewed videos and their respective channels ?":
+elif option == "What are the top 10 most viewed videos and their respective channels ?":
         if st.button("GET SOLUTION"):
             query_3 = """select channel.channel_name, video.video_name from channel inner join playlist on channel.channel_id=playlist.channel_id 
                          inner join video on playlist.playlist_id=video.playlist_id  order by view_count desc limit 10"""
@@ -207,7 +218,7 @@ if option == "What are the Names of all the videos and their corresponding chann
             st.success("DONE")
 
 # 4
-    elif option == "How many comments were made on each video, and what are their corresponding video names?":
+elif option == "How many comments were made on each video, and what are their corresponding video names?":
         if st.button("GET SOLUTION"):
             query_4 = "select video_name ,comment_count from video  order by comment_count desc"
             cursor.execute(query_4)
@@ -215,24 +226,24 @@ if option == "What are the Names of all the videos and their corresponding chann
             st.dataframe(pd.DataFrame(data_4, columns=["Video Title", "Total Comments"], index=range(1, len(data_4) + 1)))
             st.success("DONE")
 # 5
-    elif option ==  "Which video have the highest number of likes, and what are their corresponding channel name?":
-        if st.button("GET SOLUTION"):
-            query_5 = """select channel.channel_name , video.video_name  from channel inner join playlist on channel.channel_id=playlist.channel_id 
+elif option ==  "Which video have the highest number of likes, and what are their corresponding channel name?":
+    if st.button("GET SOLUTION"):
+        query_5 = """select channel.channel_name , video.video_name  from channel inner join playlist on channel.channel_id=playlist.channel_id 
                          inner join video on playlist.playlist_id=video.playlist_id order by like_count desc limit 1"""
-            cursor.execute(query_5)
-            data_5 = [i for i in cursor.fetchall()]
-            st.dataframe(pd.DataFrame(data_5, columns=["Channel Names", "Video Title"], index=range(1, len(data_5) + 1)))
-            st.success("DONE")
+        cursor.execute(query_5)
+        data_5 = [i for i in cursor.fetchall()]
+        st.dataframe(pd.DataFrame(data_5, columns=["Channel Names", "Video Title"], index=range(1, len(data_5) + 1)))
+        st.success("DONE")
 # 6
-    elif option == "What is the total number of likes for each video, and what are  their corresponding video names?":
-        if st.button("GET SOLUTION"):
-            query_6 = "select video_name  , like_count   from video  order by like_count desc "
-            cursor.execute(query_6)
-            data_6 = [i for i in cursor.fetchall()]
-            st.dataframe(pd.DataFrame(data_6, columns=["Title", "Likes", "Dislikes"], index=range(1, len(data_6) + 1)))
-            st.success("DONE")
+elif option == "What is the total number of likes for each video, and what are  their corresponding video names?":
+    if st.button("GET SOLUTION"):
+        query_6 = "select video_name  , like_count   from video  order by like_count desc "
+        cursor.execute(query_6)
+        data_6 = [i for i in cursor.fetchall()]
+        st.dataframe(pd.DataFrame(data_6, columns=["Title", "Likes", "Dislikes"], index=range(1, len(data_6) + 1)))
+        st.success("DONE")
 # 7
-    elif option == "What is the total number of views for each channel, and what are their corresponding channel names?":
+elif option == "What is the total number of views for each channel, and what are their corresponding channel names?":
         if st.button("GET SOLUTION"):
             query_7 = "select channel_name  , channel_views  from channel order by channel_views desc"
             cursor.execute(query_7)
@@ -240,7 +251,7 @@ if option == "What are the Names of all the videos and their corresponding chann
             st.dataframe(pd.DataFrame(data_7, columns=["Channel Names", "Channel Views"], index=range(1, len(data_7) + 1)))
             st.success("DONE")
 # 8
-    elif option == "What are the names of all the channels that have published videos in the year 2022?":
+elif option == "What are the names of all the channels that have published videos in the year 2022?":
         if st.button("GET SOLUTION"):
             query_8 = """select channel.channel_name , video.year   from channel inner join playlist on channel.channel_id=playlist.channel_id 
                          inner join video on playlist.playlist_id=video.playlist_id where year = 2022 order by channel_name"""
@@ -250,7 +261,7 @@ if option == "What are the Names of all the videos and their corresponding chann
             st.code(pd.DataFrame(data_8, columns=["", ""], index=range(1, len(data_8) + 1)))
             st.success("DONE")
 # 9
-    elif option == "What is the average duration of all videos in each channel, and what are their corresponding channel names?":
+elif option == "What is the average duration of all videos in each channel, and what are their corresponding channel names?":
         if st.button("GET SOLUTION"):
             query_9 = """select channel.channel_name  , avg(video.duration)  from channel inner join playlist on channel.channel_id=playlist.channel_id 
                          inner join video on playlist.playlist_id=video.playlist_id group by channel_name order by avg(duration) desc"""
@@ -259,7 +270,7 @@ if option == "What are the Names of all the videos and their corresponding chann
             st.dataframe(pd.DataFrame(data_9, columns=["Channel Names", "Average Video Duration In Seconds"], index=range(1, len(data_9) + 1)))
             st.success("DONE")
 # 10
-    elif option == "Which videos have the highest number of comments, and what are their corresponding channel names?":
+elif option == "Which videos have the highest number of comments, and what are their corresponding channel names?":
         if st.button("GET SOLUTION"):
             query_10 = """select channel.channel_name , video.video_name from channel inner join playlist on channel.channel_id=playlist.channel_id 
                           inner join video on playlist.playlist_id=video.playlist_id order by comment_count desc limit 100"""
@@ -275,10 +286,11 @@ if st.button("clear database"):
     password="root",
     database="project_youtube")
     cursor=client.cursor()
-
-    cursor.execute("delete from channel")
-    cursor.execute("delete from playlist")
-    cursor.execute("delete from video")
     cursor.execute("delete from comment")
-
-
+    client.commit
+    cursor.execute("delete from video")
+    client.commit
+    cursor.execute("delete from playlist")
+    client.commit
+    cursor.execute("delete from channel")
+    client.commit
