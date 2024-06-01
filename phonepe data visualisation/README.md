@@ -55,15 +55,15 @@
 # Tools Expertise 
 
    - Python
+   
+   -Streamlit 
      
    - SQL
      
-   - API Integration
+   - Pandas
+   
+   - plotly
      
    - Data Management using MYSQL
      
    - IDE: visual studio codes
-
-# Result :
-
-   - This project focuses on harvesting YouTube data using the YouTube API, storing it in SQL DB for analysis. Utilizes Streamlit and Python. Expertise includes Python, SQL, API integration . This project mainly aims to make interface for analysing the youtue data by pasting the channnel id and some clicks
