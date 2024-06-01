@@ -44,21 +44,13 @@
 
 # Methods
 
-   - Get YouTube Channel Data: Fetches YouTube channel data using a Channel ID and creates channel details in list format.
+   - Get Phonepe pulse Data: Clone Phonepe pulse data repository.
      
-   - Get Playlist Videos: Retrieves all playlist IDs for a provided channel ID.
-     
-   - Get Video: Returns video details for the given playlist IDs
-    
-   - Comment Details: returns comment details for the given video IDs.
-     
-   - Get All Channel Details: Provides channel, video, comment and playlist details in list format.
-     
-   - Insert Data into SQL DB: Inserts channel data into SQL DB.
+   - Store required data: Store required data into sql data base using SqlAlchemy.
      
    - Data Analysis: Conducts data analysis using SQL queries and Python integration.
      
-   - Delete SQL Records: Deletes SQL records related to the provided YouTube channel data with various options.
+   - Data visualisation: Visualize the data in map, cahrts using plotly
 
 # Tools Expertise 
 
