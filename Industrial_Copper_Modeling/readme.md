@@ -24,7 +24,7 @@
 
   - Train the model multiple times using best hyperparameters and pickle the model
 
-  - Train different classification models and compare the `Accuracy score, precission score and f1 score` values to select the best model for status prediction
+  - Train different classification models and compare the `Accuracy score, precision score and f1 score` values to select the best model for status prediction
 
   - Use grid search to find the best hyperparameters for selected model
 
