@@ -14,31 +14,36 @@
     
   - Clean and preprocess the data to remove outliers, skewness, less important features
 
+  - Use plotly and seaborn for data visualisation
+
   - Convert catagorical into numerical data using one hot encoding
 
-  - Train different regression models and compare the `MEAN ABSOLUTE ERROR, MEAN SQUARED ERROR AND R2 SCORE` values to select the best
-
-    model for price prediction
+  - Train different regression models and compare the `MEAN ABSOLUTE ERROR, MEAN SQUARE ERROR AND R2 SCORE` values to select the best model for price prediction
 
   - Use grid search to find the best hyperparameters for selected model
 
-  - train the model using best hyperparameters and pickle the model
+  - Train the model multiple times using best hyperparameters and pickle the model
+
+  - Train different classification models and compare the `Accuracy score, precission score and f1 score` values to select the best model for status prediction
+
+  - Use grid search to find the best hyperparameters for selected model
+
+  - Train the model multiple times using best hyperparameters and pickle the model
     
-  - Implement Streamlit to present code and data in a user-friendly UI.
+  - Implement Streamlit to create a user-friendly dashboard for price and status prediction.
     
-  - Use plotly and seaborn for data visualisation.
    
 
 # Getting Started
 
-  - Install/Import the necessary modules: Streamlit, Pandas, folium, plotly,seaborn and geopandas.
+  - Install/Import the necessary modules: Streamlit, Pandas, sk learn, plotly and seaborn.
     
 
 # Technical Steps to Execute the Project
 
 ### Step 1: Install/Import Modules
 
-   - Ensure the required Python modules are installed: Streamlit, Pandas, folium, plotly,seaborn and geopandas.
+   - Ensure the required Python modules are installed: Streamlit, Pandas, sk learn, plotly and seaborn.
 
 ### Step 2: Write required codes to load and clean the data
 
@@ -55,9 +60,9 @@
      
    - pandas
      
-   - Geopandas
+   - sk learn
      
-   - folium, plotly and seaborn
+   - plotly and seaborn
      
    - IDE: visual studio codes
 
