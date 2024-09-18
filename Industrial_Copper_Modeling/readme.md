@@ -6,3 +6,6 @@
 > ## **Overview**
 
    This project aims to create a machine learning model for predicting the price of the copper and status of the leads 
+
+
+  
