@@ -16,7 +16,7 @@
 
   - Convert catagorical into numerical data using one hot encoding
 
-  - Train different regression models and compare the 'MEAN ABSOLUTE ERROR, MEAN SQUARED ERROR AND R2 SCORE' values to select the best
+  - Train different regression models and compare the `MEAN ABSOLUTE ERROR, MEAN SQUARED ERROR AND R2 SCORE` values to select the best
 
     model for price prediction
 
