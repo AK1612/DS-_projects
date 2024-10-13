@@ -1,0 +1,23 @@
+model =RandomForestRegressor()
+best_parameters =RandomForestRegressor(min_samples_split=50, n_estimators=150)
+version = 4train
+MAE =0.22031683670776653
+MSE =0.07424249966924967
+R2 =-0.2964950293081545
+test
+MAE =0.22001450119164642
+MSE =0.07370526144236918
+R2 =-0.30254502474002876
+model =RandomForestClassifier()
+best_parameters =RandomForestClassifier(max_features=None, min_samples_split=100)
+version = 1train
+precision =0.9324376922594011
+recall =0.8999188105134326
+accuracy =0.9173563733746956
+f1 =0.9158896946376597
+
+test
+precision =0.9499336611254195
+recall =0.884042707728065
+accuracy =0.8760248171947707
+f1 =0.9158045220270118
