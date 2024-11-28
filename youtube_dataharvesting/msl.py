@@ -10,7 +10,7 @@ client=mysql.connector.connect(
     host="localhost",
     user="root",
     password="root",
-    database="project_youtube"
+    database="project_dsa"
 )
 cursor=client.cursor()
 #table channel
