@@ -8,7 +8,7 @@ import googleapiclient.discovery
 
 api_service_name = "youtube"
 api_version = "v3"
-api_key="AIzaSyDjnu1Ohxk-rK8DvD8g6B2HAqkeBKke12U" #insert API key here
+api_key="asddfhhkjnnck" #insert API key here
 youtube = googleapiclient.discovery.build(api_service_name, api_version, developerKey=api_key)
 
 #Step 1: Getting channel details using channel id given by user
