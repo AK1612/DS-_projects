@@ -169,6 +169,7 @@ if add_selectbox=="DATA ETRACTION":
        pla(cha_data[0][0])
        vid(len(data_pla))
        comm(len(v_data))
+       st.success("DONE")
 
 if add_selectbox=="QUERIES":
 
@@ -352,17 +353,4 @@ if add_selectbox=="QUERIES":
                 st.success("DONE")
                 
 
-    if st.button("clear database"):
-        client=mysql.connector.connect(host="localhost",
-                                       user="root",
-                                       password="root",
-                                       database="proj_dsa")
-        cursor=client.cursor()
-        cursor.execute("delete from comment")
-        client.commit()
-        cursor.execute("delete from video")
-        client.commit()
-        cursor.execute("delete from playlist")
-        client.commit()
-        cursor.execute("delete from channel")
-        client.commit()
+    
