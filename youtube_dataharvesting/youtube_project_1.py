@@ -3,12 +3,13 @@ import streamlit as st
 import mysql.connector
 import pandas as pd
 import googleapiclient.discovery
+from mysql.connector import errorcode
 
 #youtube API connectivity:
 
 api_service_name = "youtube"
 api_version = "v3"
-api_key="asddfhhkjnnck" #insert API key here
+api_key="AIzaSyDjnu1Ohxk-rK8DvD8g6B2HAqkeBKke12U" #insert API key here
 youtube = googleapiclient.discovery.build(api_service_name, api_version, developerKey=api_key)
 
 #Step 1: Getting channel details using channel id given by user
@@ -26,16 +27,25 @@ def ybe(c_id):
                        response['items'][0]['snippet']['description']])
     cha_data[0][2]=int(cha_data[0][2])
     cha_data[0]=tuple(cha_data[0])
-    client=mysql.connector.connect(host="localhost",
-                                   user="root",
-                                   password="root",
-                                   database="proj_dsa")
-    cursor=client.cursor()
-    query="""insert into channel (channel_id,
-           channel_name, channel_views, channel_description) values (%s, %s, %s, %s)"""
-    cursor.execute(query,cha_data[0])
-    client.commit()
-    return cha_data
+    try:
+        client=mysql.connector.connect(host="localhost",
+                                       user="root",
+                                       password="root",
+                                       database="proj_dsa")
+        cursor=client.cursor()
+        query="""insert into channel (channel_id,
+              channel_name, channel_views, channel_description) values (%s, %s, %s, %s)"""
+        cursor.execute(query,cha_data[0])
+        client.commit()
+    except mysql.connector.IntegrityError as e:
+        if e.errno == errorcode.ER_DUP_ENTRY:
+            st.text("Data already exists in the database.")
+            return False
+        else:
+            st.text("An error occurred:", e)
+            return False
+
+    return cha_data,True
 
 #Step 2:Getting playlist details using channel id
 
@@ -52,10 +62,22 @@ def pla(p):
                                    password="root",
                                    database="proj_dsa")
     cursor=client.cursor()
-    query="insert into playlist values(%s, %s, %s)"
-    cursor.execute(query,data_pla[0])
-    client.commit()
-    return data_pla
+    
+    try:
+        query="insert into playlist values(%s, %s, %s)"
+        cursor.executemany(query,data_pla)
+        client.commit()
+    except mysql.connector.IntegrityError as e:
+        if e.errno == errorcode.ER_DUP_ENTRY:
+            st.text("Data already exists in the database.")
+            return False
+        else:
+            st.text("An error occurred:", e)
+            return False
+
+
+
+    return data_pla,True
 
 #Step 3:Getting video details using playlist id
 
@@ -161,19 +183,30 @@ def comm(t):
 add_selectbox=st.sidebar.selectbox("select options",("HOME","DATA ETRACTION","QUERIES"))
 
 if add_selectbox=="HOME":
-    st.title('YOUTUBE DATA HARVESTING')
+    
+    col1, col2 = st.columns([1, 2])
+
+# Add the logo to the first column
+    with col1:
+        st.image("C:/Users/SHREE/OneDrive/Desktop/gds/DS-_projects/youtube_dataharvesting/youtube-freepik-1687836283.jpg", width=200)
+
+# Add the title to the second column
+    with col2:
+       st.title('YOUTUBE DATA HARVESTING')
+st.sidebar.success("select page above.")
+
 if add_selectbox=="DATA ETRACTION":
     j=st.text_input("Enter the Channel id",None)
     if (st.button("extract")):
-       ybe(j)
-       pla(cha_data[0][0])
-       vid(len(data_pla))
-       comm(len(v_data))
-       st.success("DONE")
+       if ybe(j):
+        pla(cha_data[0][0])
+        vid(len(data_pla))
+        comm(len(v_data))
+        st.success("DONE")
 
 if add_selectbox=="QUERIES":
 
-    options = ["What are the Names of all the videos and their corresponding channels?",
+    options = ["select query","What are the Names of all the videos and their corresponding channels?",
                 "Which channels have the most number of videos, and how many videos do they have?",
                 "What are the top 10 most viewed videos and their respective channels ?",
                 "How many comments were made on each video, and what are their corresponding video names?",
@@ -285,7 +318,7 @@ if add_selectbox=="QUERIES":
             query_6 = "select video_name  , like_count  from video  order by like_count desc "
             cursor.execute(query_6)
             data_6 = [i for i in cursor.fetchall()]
-            st.dataframe(pd.DataFrame(data_6, columns=["Title", "Likes", "Dislikes"], index=range(1, len(data_6) + 1)))
+            st.dataframe(pd.DataFrame(data_6, columns=["Title", "Likes"], index=range(1, len(data_6) + 1)))
             st.success("DONE")
             cursor.close()
 # 7
@@ -352,5 +385,3 @@ if add_selectbox=="QUERIES":
                 st.dataframe(pd.DataFrame(data_10, columns=["Channel Names", "Video Title"], index=range(1, len(data_10) + 1)))
                 st.success("DONE")
                 
-
-    
