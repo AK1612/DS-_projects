@@ -1,6 +1,5 @@
 # YouTube Data Harvesting Warehousing and Data Analysis
 ![Image](https://github.com/user-attachments/assets/c47d7852-83a5-437a-9174-86abe01f6b55)
-
 # Overview
 
  - This project is focused on harvesting data from YouTube channels using the YouTube API, processing the data, and warehousing it. The harvested data is stored in a SQL database for in-depth data analysis. The project's core functionality relies on the Extract, Transform, Load & process.
