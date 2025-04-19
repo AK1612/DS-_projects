@@ -1,6 +1,5 @@
 # YouTube Data Harvesting Warehousing and Data Analysis
-![08OnTech-YouTube-mediumSquareAt3X-v2](https://github.com/AK1612/DS-_projects/assets/159476917/7da700ab-fd28-4b6c-b25a-e48056e7f3f1)
-
+![Image](https://github.com/user-attachments/assets/c47d7852-83a5-437a-9174-86abe01f6b55)
 
 # Overview
 
