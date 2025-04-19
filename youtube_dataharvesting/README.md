@@ -7,15 +7,9 @@
  - This project is focused on harvesting data from YouTube channels using the YouTube API, processing the data, and warehousing it. The harvested data is stored in a SQL database for in-depth data analysis. The project's core functionality relies on the Extract, Transform, Load & process.
 
 # Approach 
+![image](https://github.com/user-attachments/assets/3a3e4454-b03c-429c-b3f8-c692d070ce8d)
 
-  - Harvest YouTube channel data using the YouTube API by providing a 'Channel ID'.
-    
-  - Store channel data in SQL records for data analysis
-    
-  - Implement Streamlit to present code and data in a user-friendly UI.
-    
-  - Execute data analysis using SQL queries and Python integration.
-
+ 
 # Getting Started
 
   - Install/Import the necessary modules: Streamlit, Pandas, MYSQL, Googleapiclient.
