@@ -4,6 +4,7 @@ import mysql.connector
 import pandas as pd
 import googleapiclient.discovery
 from mysql.connector import errorcode
+from googleapiclient.errors import HttpError
 
 #youtube API connectivity:
 
@@ -69,7 +70,7 @@ def pla(p):
         client.commit()
     except mysql.connector.IntegrityError as e:
         if e.errno == errorcode.ER_DUP_ENTRY:
-            st.text("Data already exists in the database.")
+            st.text("Playlist Data already exists in the database.")
             return False
         else:
             st.text("An error occurred:", e)
@@ -83,15 +84,22 @@ def pla(p):
 
 def vid(x):
     data_video=[]
+    data_video_u=[]
+    unique=[]
     for i in range(x):
         request = youtube.playlistItems().list(part="snippet,contentDetails",
                                                playlistId=data_pla[i][0],maxResults=50)
         response=request.execute()
         for h in range(len(response['items'])):
-            j=len(data_video)
-            data_video.insert(j,[response['items'][h]['snippet']['resourceId']['videoId'],data_pla[i][0],
+            j=len(data_video_u)
+            data_video_u.insert(j,[response['items'][h]['snippet']['resourceId']['videoId'],data_pla[i][0],
                                  response['items'][h]['snippet']['title'],response['items'][h]['snippet']['description']])
-    
+    for m in data_video_u:
+        unique_id=m[0]
+        if unique_id not in unique:
+            unique.append(unique_id)
+            data_video.append(m)
+              
     count_video=[]
     er=[]
     s=0
@@ -105,10 +113,12 @@ def vid(x):
             s=s+1
         else:
             for m in range(len(response['items'])):
-                count_video.insert(m,[response['items'][0]['statistics']['viewCount'],response['items'][0]['statistics']['likeCount'],
-                                      response['items'][0]['statistics']['favoriteCount'],response['items'][0]['statistics']['commentCount'],
+                  
+                  count_video.insert(m,[response['items'][0]['statistics']['viewCount'],response['items'][0]['statistics']['likeCount'],
+                                      response['items'][0]['statistics']['favoriteCount'],response['items'][0]['statistics'].get('commentCount', 0),
                                       response['items'][0]['contentDetails']['duration'],response['items'][0]['snippet']['thumbnails']['default']['url'],
                                       response['items'][0]['snippet']['publishedAt']])
+              
     if len(er)!=0:
         for q in range(len(er)):
             del data_video[er[q]]
@@ -150,11 +160,15 @@ def vid(x):
     return v_data
 
 #Step 4:Getting comment details of each video using video id
-
+del_video=[]
 def comm(t):
     for g in range(t):
-        request = youtube.commentThreads().list(part="snippet,replies",videoId=v_data[g][0],maxResults=10)
-        response=request.execute()
+        try:
+          request = youtube.commentThreads().list(part="snippet,replies",videoId=v_data[g][0],maxResults=10)
+          response=request.execute()
+        except HttpError as e:
+            del_video=v_data[g][0]
+
         for z in range(len(response['items'])):
             d=len(comm_data)
             comm_data.insert(d,[response['items'][z]['snippet']['topLevelComment']['id'],v_data[g][0],
